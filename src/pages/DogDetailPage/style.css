@@ -63,8 +63,34 @@
     font-weight: 600;
     flex-direction: column;
     justify-content: center;
-    /* border-top: 6px solid rgb(219, 94, 30);
-    background-color: #efe9e4; */
+    /* border-top: 6px solid rgb(219, 94, 30);*/
+    background-color: #efe9e4; 
+}
+.tab-div-open{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    font-size: 21px;
+    min-height: 120px;
+    text-align: center;
+    font-weight: 600;
+    flex-direction: column;
+    justify-content: center;
+    border-top: 6px solid rgb(219, 94, 30);
+    background-color: white; 
+}
+.tab-div-close{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    font-size: 21px;
+    min-height: 120px;
+    text-align: center;
+    font-weight: 600;
+    flex-direction: column;
+    justify-content: center;
+    border-top: 0px;
+    background-color: #efe9e4; 
 }
 .dog-right-bottom{
     display: flex;
@@ -78,4 +104,12 @@
     height: 30px;
     margin-top: 7px;
     margin-left: 3px;
+}
+.dog-file{
+    margin-right: 12px;
+    margin-top: -2px;
+    cursor: pointer;
+}
+.download-file{
+    cursor: pointer;
 }

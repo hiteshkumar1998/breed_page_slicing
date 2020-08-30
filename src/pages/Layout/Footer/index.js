@@ -24,9 +24,9 @@ class Footer extends Component {
       .then((response) => {
         this.setState({
           fb_link: response.data.site_facebook_link,
-          instagram_limk: response.data.site_instagram_link,
+          instagram_link: response.data.site_instagram_link,
           linkedIn_link: response.data.site_linkedIn_link,
-          twitter_limk: response.data.site_twitter_link
+          twitter_link: response.data.site_twitter_link
         });
       })
       .catch(function (error) {
@@ -186,7 +186,7 @@ class Footer extends Component {
                         </Box>
                       </Box>
                       <Box className="social-links-divider">
-                        <hr style={{ width: "25px" }} />
+                        <hr style={{ width: "25px", background: "white" }}/>
                       </Box>
                       <Box className="follow-us-text">Follow Us</Box>
                     </Box>

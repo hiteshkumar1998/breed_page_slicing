@@ -1,3 +1,4 @@
+const qs = require('qs');
 const axios = require("axios");
 
 // get request
@@ -9,6 +10,20 @@ export const httpGet = (url, params = "") => {
     },
     (err) => {}
   );
+};
+
+// post request
+export const httpPost = (url, requestData, params = "") => {
+  return axios({
+    method: 'post',
+    url: url,
+    data: qs.stringify(requestData),
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  }).then(res => {
+    return res;
+  })
 };
 
 export const getHomePage = () => {

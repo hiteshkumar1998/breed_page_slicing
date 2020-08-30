@@ -163,6 +163,7 @@ body{
   justify-content: space-between;
 }
 .dog-info-main {
+  height: 100%;
   font-size: 15px;
   padding-top: 16px;
   padding-left: 16px;
@@ -512,6 +513,7 @@ body{
   justify-content: center;
   background-color: #db5e1e;
   color: white;
+  cursor: pointer;
 }
 .submit-newsletter-grand-child{
   display: flex;

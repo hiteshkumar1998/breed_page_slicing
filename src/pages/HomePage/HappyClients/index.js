@@ -6,6 +6,7 @@ import Slider from "react-slick";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
 import { httpGet } from "../../../utils/http";
+import quotesIcon from "../../../images/quotes.png";
 
 var settings = {
   infinite: true,
@@ -74,7 +75,7 @@ class HappyClients extends Component {
                             <Box classname="slide-left-main-div">
                               <Box className="quotes-div">
                                 <img
-                                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAAA8CAYAAADMtVzqAAAACXBIWXMAAAsSAAALEgHS3X78AAADMElEQVR4nO2a0Y0aMRBAJ6v8HxXERNr/XCoIHdxVEJMKQgfhKggdhK0g0AHpAL7jD7aDowIiR7MrB3YXj8deI2WehE46fLZ54x2PzcH5fE76+v353TT1GLFfQ3N+CwkwWk0BYAEAzwCwx593j9HKznMOAE9Gq49lVe8v5/zGWouF0WqGop4uunxfVvXxHoUZrSYoyc5bOW9VZVXPL9tHEYailgDwqadJ5+C5MVotcN4PPVO5CjRLGEZnBQDao/ndrDJ89FYXK6qLq0AXjEFtdI6esgAjmRUbYKPVBgB+esiyaMzHLWRhzqDfB5Zy3+CTXMJwVR078ustFu77JGFGq0fc9aiDNiz8msXFaLXEVUUJcMPcDbS3MIzQznMp97EYe5UZrdYA8I3RxYMbaC9hRqs5I0K9g6cEU8eekGOHaAN9UxjK+hHxs421yuzT8CFSX22gB4Vhzoopqxk8aeWPj2EsWQ3DwnA73UUe1HJI0GeL0cq3LqRwAoCNdTJ0ltxEyFkulS0Wu85nscCN6WvELmusHzdlVb/aX3QKw2041pK2opapq3zMi+tI3dU456v+roRh3uJsww2/bA0z4nFoHeGJOKGoVV+DrhXW25jAS1nVox2F8PAfWkw3HDDAgynjH2E4cN+Ngw8nHHTDnDwVbnC2OO/XWw0vVxh34FnKpN5FhCBvy6r2LnPasgLLCM7AX8aWhXBODge8PPTGrcM4A2+7dpTU4M7IyV1ej6GLKyy0+j5RoxQRzonhJeSJ+CsMS4nQW4gVNUoR4QQ5qBpoVtiM8RlilCGhhM57HRpkrrBtrtWFT0VooRqcbxthj4F/P3a95RI655qzmzfCQvNXTmFTjzZdsOZcYOEXQp0x2QMjjbBqRbvCQm8/cxSpLlnmXTByQW5hQddP3NNI8Be5/ytFrlzAgZF32dfjnH93esZaiMKurOoU3xP4MsHbZBLu3R5HWOgXDTmFqcDb5FZYwahncpJtzgXzq/9cZBUmiLB0iDAiIoyICCMiwoiIMCIijIgIIyLCiIgwIiKMiAgjIsKIiDAiIoyICCMiwoiIMCIijIgIIyLCiIgwIiKMAgD8Aat2zjyDzkYVAAAAAElFTkSuQmCC"
+                                  src={quotesIcon}
                                   alt="quotes"
                                 />
                               </Box>

@@ -4,16 +4,17 @@ import { Container } from "@material-ui/core";
 import withWidth from "@material-ui/core/withWidth";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
-import listingDogImage from "../../../images/denver-dog.png";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
-import { getHomePage } from "../../../utils/http";
+import { getHomePage, httpGet } from "../../../utils/http";
+import { withRouter } from "react-router";
 
 class RecentListing extends Component {
   //state
   state = {
     is_tab_breed: true,
     page_section: [],
+    dogs: []
   };
 
   componentDidMount() {
@@ -22,17 +23,43 @@ class RecentListing extends Component {
         page_section: res.data.page_sections,
       })
     );
+    this.getDogs(0);
   }
+  //route change function
+  routeChange = (path) => {
+    this.props.history.push(path);
+  };
 
+  // declare dogs get function
+  getDogs = (is_for_sale) => {
+    const url =
+      "http://breed-dev-back.vuwork.com:8082/recentlistings?dog=1&is_for_sale=" +
+      is_for_sale +
+      "&limit=9";
+
+    httpGet(url)
+      .then((response) => {
+        this.setState({
+          dogs: response.data,
+        });
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  };
+  //recent listing breed tab open function
   openBreedTab = () => {
     this.setState({ is_tab_breed: true });
   };
 
+  //recent listing breed tab close function
   closeBreedTab = () => {
     this.setState({ is_tab_breed: false });
   };
   render() {
-    const { page_section } = this.state;
+    //define constants
+    const { page_section, dogs } = this.state;
     return (
       <>
         <Box className="recent-listing-section">
@@ -48,11 +75,20 @@ class RecentListing extends Component {
                 <Box className="breed-or-adoption-text-main-child">
                   <Box
                     className="breed-worthy-text"
-                    onClick={this.openBreedTab}
+                    onClick={() => {
+                      this.openBreedTab();
+                      this.getDogs(0);
+                    }}
                   >
                     Breed worthy dogs
                   </Box>
-                  <Box className="adoption-text" onClick={this.closeBreedTab}>
+                  <Box
+                    className="adoption-text"
+                    onClick={() => {
+                      this.closeBreedTab();
+                      this.getDogs(1);
+                    }}
+                  >
                     Up for adoption
                   </Box>
                 </Box>
@@ -80,342 +116,81 @@ class RecentListing extends Component {
 
             <Box className="dogs-section">
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={4}>
-                  <Box className="dog-box">
-                    <Box className="dog-box-child">
-                      <Box style={{ width: "100%" }}>
-                        <img
-                          src={listingDogImage}
-                          alt="header-logo"
-                          style={{ width: "100%", height: "100%" }}
-                        />
-                      </Box>
-                      <Box className="dog-info-main">
-                        <Box
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Box>
-                            <strong>Breed</strong>
+                {dogs.map((dog, index) => {
+                  return (
+                    <Grid item xs={12} sm={4}>
+                      <Box height="100%">
+                        <Box className="dog-box-child">
+                          <Box style={{ width: "100%" }}>
+                            <img
+                              src={dog.main_image}
+                              alt="header-logo"
+                              style={{ width: "100%", height: "100%" }}
+                            />
                           </Box>
-                          <Box
-                            style={{
-                              display: "flex",
-                              fontSize: "15px",
-                              fontWeight: 600,
-                            }}
-                          >
-                            <Box style={{ paddingRight: "5px" }}>
-                              <FavoriteBorderIcon />
+                          <Box className="dog-info-main">
+                            <Box
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Box>
+                                <strong>{dog.breed_name}</strong>
+                              </Box>
+                              <Box
+                                style={{
+                                  display: "flex",
+                                  fontSize: "15px",
+                                  fontWeight: 600,
+                                }}
+                              >
+                                <Box style={{ paddingRight: "5px" }}>
+                                  <FavoriteBorderIcon />
+                                </Box>
+                                <Box>{dog.likes} Likes</Box>
+                              </Box>
                             </Box>
-                            <Box>1 Likes</Box>
-                          </Box>
-                        </Box>
-                        <Box
-                          style={{ marginTop: "40px", marginBottom: "30px" }}
-                        >
-                          Lorem Ipsum
-                        </Box>
-                        <Box
-                          style={{
-                            marginBottom: "45px",
-                            display: "flex",
-                            color: "darkorange",
-                          }}
-                        >
-                          <Box>
-                            <strong>Read More</strong>
-                          </Box>
-                          <Box style={{ paddingLeft: "5px" }}>
-                            <ArrowRightAltIcon />
-                          </Box>
-                        </Box>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Box className="dog-box">
-                    <Box className="dog-box-child">
-                      <Box style={{ width: "100%" }}>
-                        <img
-                          src={listingDogImage}
-                          alt="header-logo"
-                          style={{ width: "100%", height: "100%" }}
-                        />
-                      </Box>
-                      <Box className="dog-info-main">
-                        <Box
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Box>
-                            <strong>Breed</strong>
-                          </Box>
-                          <Box
-                            style={{
-                              display: "flex",
-                              fontSize: "15px",
-                              fontWeight: 600,
-                            }}
-                          >
-                            <Box style={{ paddingRight: "5px" }}>
-                              <FavoriteBorderIcon />
+                            <Box marginBottom="40px" color="rgb(124, 124, 124)">
+                              {dog.city && (
+                                <span style={{ fontWeight: "400" }}>
+                                  {dog.city}
+                                </span>
+                              )}
+                              {dog.state && <strong>, {dog.state}</strong>}
                             </Box>
-                            <Box>1 Likes</Box>
-                          </Box>
-                        </Box>
-                        <Box
-                          style={{ marginTop: "40px", marginBottom: "30px" }}
-                        >
-                          Lorem Ipsum
-                        </Box>
-                        <Box
-                          style={{
-                            marginBottom: "45px",
-                            display: "flex",
-                            color: "darkorange",
-                          }}
-                        >
-                          <Box>
-                            <strong>Read More</strong>
-                          </Box>
-                          <Box style={{ paddingLeft: "5px" }}>
-                            <ArrowRightAltIcon />
-                          </Box>
-                        </Box>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Box className="dog-box">
-                    <Box className="dog-box-child">
-                      <Box style={{ width: "100%" }}>
-                        <img
-                          src={listingDogImage}
-                          alt="header-logo"
-                          style={{ width: "100%", height: "100%" }}
-                        />
-                      </Box>
-                      <Box className="dog-info-main">
-                        <Box
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Box>
-                            <strong>Breed</strong>
-                          </Box>
-                          <Box
-                            style={{
-                              display: "flex",
-                              fontSize: "15px",
-                              fontWeight: 600,
-                            }}
-                          >
-                            <Box style={{ paddingRight: "5px" }}>
-                              <FavoriteBorderIcon />
+                            <Box
+                              style={{
+                                marginTop: "40px",
+                                marginBottom: "30px",
+                              }}
+                            >
+                              {dog.description}
                             </Box>
-                            <Box>1 Likes</Box>
-                          </Box>
-                        </Box>
-                        <Box
-                          style={{ marginTop: "40px", marginBottom: "30px" }}
-                        >
-                          Lorem Ipsum
-                        </Box>
-                        <Box
-                          style={{
-                            marginBottom: "45px",
-                            display: "flex",
-                            color: "darkorange",
-                          }}
-                        >
-                          <Box>
-                            <strong>Read More</strong>
-                          </Box>
-                          <Box style={{ paddingLeft: "5px" }}>
-                            <ArrowRightAltIcon />
-                          </Box>
-                        </Box>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Box className="dog-box">
-                    <Box className="dog-box-child">
-                      <Box style={{ width: "100%" }}>
-                        <img
-                          src={listingDogImage}
-                          alt="header-logo"
-                          style={{ width: "100%", height: "100%" }}
-                        />
-                      </Box>
-                      <Box className="dog-info-main">
-                        <Box
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Box>
-                            <strong>Breed</strong>
-                          </Box>
-                          <Box
-                            style={{
-                              display: "flex",
-                              fontSize: "15px",
-                              fontWeight: 600,
-                            }}
-                          >
-                            <Box style={{ paddingRight: "5px" }}>
-                              <FavoriteBorderIcon />
+                            <Box
+                              style={{
+                                marginBottom: "45px",
+                                display: "flex",
+                                color: "darkorange",
+                                cursor: "pointer",
+                              }}
+                              onClick={() =>
+                                this.routeChange("/dog-detail?id=" + dog.id)
+                              }
+                            >
+                              <Box>
+                                <strong>Read More</strong>
+                              </Box>
+                              <Box style={{ paddingLeft: "5px" }}>
+                                <ArrowRightAltIcon />
+                              </Box>
                             </Box>
-                            <Box>1 Likes</Box>
-                          </Box>
-                        </Box>
-                        <Box
-                          style={{ marginTop: "40px", marginBottom: "30px" }}
-                        >
-                          Lorem Ipsum
-                        </Box>
-                        <Box
-                          style={{
-                            marginBottom: "45px",
-                            display: "flex",
-                            color: "darkorange",
-                          }}
-                        >
-                          <Box>
-                            <strong>Read More</strong>
-                          </Box>
-                          <Box style={{ paddingLeft: "5px" }}>
-                            <ArrowRightAltIcon />
                           </Box>
                         </Box>
                       </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Box className="dog-box">
-                    <Box className="dog-box-child">
-                      <Box style={{ width: "100%" }}>
-                        <img
-                          src={listingDogImage}
-                          alt="header-logo"
-                          style={{ width: "100%", height: "100%" }}
-                        />
-                      </Box>
-                      <Box className="dog-info-main">
-                        <Box
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Box>
-                            <strong>Breed</strong>
-                          </Box>
-                          <Box
-                            style={{
-                              display: "flex",
-                              fontSize: "15px",
-                              fontWeight: 600,
-                            }}
-                          >
-                            <Box style={{ paddingRight: "5px" }}>
-                              <FavoriteBorderIcon />
-                            </Box>
-                            <Box>1 Likes</Box>
-                          </Box>
-                        </Box>
-                        <Box
-                          style={{ marginTop: "40px", marginBottom: "30px" }}
-                        >
-                          Lorem Ipsum
-                        </Box>
-                        <Box
-                          style={{
-                            marginBottom: "45px",
-                            display: "flex",
-                            color: "darkorange",
-                          }}
-                        >
-                          <Box>
-                            <strong>Read More</strong>
-                          </Box>
-                          <Box style={{ paddingLeft: "5px" }}>
-                            <ArrowRightAltIcon />
-                          </Box>
-                        </Box>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Box className="dog-box">
-                    <Box className="dog-box-child">
-                      <Box style={{ width: "100%" }}>
-                        <img
-                          src={listingDogImage}
-                          alt="header-logo"
-                          style={{ width: "100%", height: "100%" }}
-                        />
-                      </Box>
-                      <Box className="dog-info-main">
-                        <Box
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                          }}
-                        >
-                          <Box>
-                            <strong>Breed</strong>
-                          </Box>
-                          <Box
-                            style={{
-                              display: "flex",
-                              fontSize: "15px",
-                              fontWeight: 600,
-                            }}
-                          >
-                            <Box style={{ paddingRight: "5px" }}>
-                              <FavoriteBorderIcon />
-                            </Box>
-                            <Box>1 Likes</Box>
-                          </Box>
-                        </Box>
-                        <Box
-                          style={{ marginTop: "40px", marginBottom: "30px" }}
-                        >
-                          Lorem Ipsum
-                        </Box>
-                        <Box
-                          style={{
-                            marginBottom: "45px",
-                            display: "flex",
-                            color: "darkorange",
-                          }}
-                        >
-                          <Box>
-                            <strong>Read More</strong>
-                          </Box>
-                          <Box style={{ paddingLeft: "5px" }}>
-                            <ArrowRightAltIcon />
-                          </Box>
-                        </Box>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Grid>
+                    </Grid>
+                  );
+                })}
               </Grid>
             </Box>
             <Box className="see-more-btn-seaction">
@@ -483,4 +258,4 @@ class RecentListing extends Component {
   }
 }
 
-export default withWidth()(RecentListing);
+export default withWidth()(withRouter(RecentListing));

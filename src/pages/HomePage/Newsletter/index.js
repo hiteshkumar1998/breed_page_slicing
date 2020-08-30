@@ -5,20 +5,72 @@ import withWidth from "@material-ui/core/withWidth";
 import Grid from "@material-ui/core/Grid";
 import InputLabel from "@material-ui/core/InputLabel";
 import ArrowRightAltIcon from "@material-ui/icons/ArrowRightAlt";
-import { httpGet } from "../../../utils/http";
-import Link from '@material-ui/core/Link';
+import { httpGet, httpPost } from "../../../utils/http";
+import Link from "@material-ui/core/Link";
+import { withSnackbar } from "notistack";
+import CloseIcon from "@material-ui/icons/Close";
 
 class Newsletter extends Component {
   // state
   state = {
     homepage_bottom_left_banner: "",
     homepage_bottom_right_banner: "",
+    name: "",
+    email: "",
+    name_error: "",
+    email_error: "",
   };
 
   componentDidMount() {
     this.getHomePageLeftBannerById();
     this.getHomePageRightBannerById();
   }
+
+  //sets field data in local state
+  changeHandler = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
+  };
+
+  //email format
+  email_reg_expression = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  //checks form validation
+  validate = () => {
+    this.setState({
+      name_error: "",
+      email_error: "",
+    });
+
+    //defin error = false
+    let error = false;
+
+    if (this.state.name === "") {
+      this.setState({ name_error: "Name is required" });
+      error = true;
+    }
+    if (this.state.name !== "" && this.state.name.length < 5) {
+      this.setState({
+        name_error: "Name should be greater than 5 characters",
+      });
+      error = true;
+    }
+    if (this.state.email === "") {
+      this.setState({ email_error: "Email is required" });
+      error = true;
+    }
+    if (
+      this.state.email !== "" &&
+      !this.email_reg_expression.test(this.state.email)
+    ) {
+      this.setState({ email_error: "Email is invalid" });
+      error = true;
+    }
+
+    if (error) {
+      return false;
+    }
+    return true;
+  };
 
   // declare home page left banner function
   getHomePageLeftBannerById = () => {
@@ -36,8 +88,8 @@ class Newsletter extends Component {
       });
   };
 
-   // declare home page right banner function
-   getHomePageRightBannerById = () => {
+  // declare home page right banner function
+  getHomePageRightBannerById = () => {
     const url = "http://breed-dev-back.vuwork.com:8082/getBannerById/";
     const BannerId = 1;
     httpGet(url, BannerId)
@@ -51,8 +103,71 @@ class Newsletter extends Component {
         console.log(error);
       });
   };
+
+  // toast message delete function
+  action = (key) => (
+    <Box
+      onClick={() => {
+        this.props.closeSnackbar(key);
+      }}
+      fontSize="large"
+    >
+      <CloseIcon />
+    </Box>
+  );
+
+  //insert record
+  onSubmit = (e) => {
+    e.preventDefault();
+    const newsletterData = {
+      name: this.state.name,
+      email: this.state.email,
+    };
+
+    const isValid = this.validate();
+
+    //checks newsletter data is valid or not
+    if (isValid) {
+      const url =
+        "http://breed-dev-back.vuwork.com:8082/newsletter_subscription/add";
+      httpPost(url, newsletterData)
+        .then((response) => {
+          console.log(response);
+          if (response.status === 200) {
+            this.props.enqueueSnackbar("Record added successfully.", {
+              variant: "success",
+              anchorOrigin: {
+                vertical: "top",
+                horizontal: "right",
+              },
+            });
+          }
+        })
+        .catch((error) => {
+          // handle error
+          if (error.response.status === 400) {
+            const action = this.action;
+            this.props.enqueueSnackbar(error.response.data.message, {
+              variant: "error",
+              action,
+              anchorOrigin: {
+                vertical: "top",
+                horizontal: "right",
+              },
+            });
+          }
+        });
+    }
+  };
+
   render() {
-    const {homepage_bottom_left_banner, homepage_bottom_right_banner} = this.state;
+    const {
+      homepage_bottom_left_banner,
+      homepage_bottom_right_banner,
+      name_error,
+      email_error
+    } = this.state;
+
     return (
       <>
         <Box
@@ -66,8 +181,8 @@ class Newsletter extends Component {
                 <Grid item xs={12} sm={6}>
                   <Box>
                     <Box>
-                    <Link href={homepage_bottom_left_banner.link}>
-                      <img
+                      <Link href={homepage_bottom_left_banner.link}>
+                        <img
                           src={homepage_bottom_left_banner.image}
                           width="100%"
                           alt="banner-img"
@@ -79,8 +194,8 @@ class Newsletter extends Component {
                 <Grid item xs={12} sm={6}>
                   <Box>
                     <Box>
-                    <Link href={homepage_bottom_right_banner.link}>
-                      <img
+                      <Link href={homepage_bottom_right_banner.link}>
+                        <img
                           src={homepage_bottom_right_banner.image}
                           width="100%"
                           alt="banner-img"
@@ -145,7 +260,10 @@ class Newsletter extends Component {
                         id="my-input"
                         aria-describedby="my-helper-text"
                         style={{ paddingBottom: "17px" }}
+                        name="name"
+                        onChange={this.changeHandler}
                       />
+                      {name_error && <p style={{color: "#f44336"}}>{name_error}</p>}
                     </FormControl>
                   </Box>
                   <Box
@@ -169,7 +287,10 @@ class Newsletter extends Component {
                         id="my-input"
                         aria-describedby="my-helper-text"
                         style={{ paddingBottom: "17px" }}
+                        name="email"
+                        onChange={this.changeHandler}
                       />
+                      {email_error && <p style={{color: "#f44336"}}>{email_error}</p>}
                     </FormControl>
                   </Box>
                   <Box
@@ -179,7 +300,7 @@ class Newsletter extends Component {
                   >
                     <Box className="submit-newsletter-child">
                       <Box className="submit-newsletter-grand-child">
-                        <ArrowRightAltIcon />
+                        <ArrowRightAltIcon onClick={this.onSubmit} />
                       </Box>
                     </Box>
                   </Box>
@@ -193,4 +314,4 @@ class Newsletter extends Component {
   }
 }
 
-export default withWidth()(Newsletter);
+export default withWidth()(withSnackbar(Newsletter));

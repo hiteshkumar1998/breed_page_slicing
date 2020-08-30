@@ -5,38 +5,114 @@ import withWidth from "@material-ui/core/withWidth";
 import Grid from "@material-ui/core/Grid";
 import heartIcon from "../../../images/heart.png";
 import Button from "@material-ui/core/Button";
+import { httpGet } from "../../../utils/http";
+import { withRouter } from "react-router-dom";
+import Link from "@material-ui/core/Link";
 
 class DogInformation extends Component {
-    render() {
-      return (
-        <>
-          <Box>
+  // state
+  state = {
+    dog_detail: "",
+    user_detail: "",
+    dog_files: [],
+    tab_open: {
+      availability: true,
+      litter_history: false,
+      health_testing: false,
+      temperament: false,
+      hunt_tests: false,
+    },
+  };
+
+  componentDidMount() {
+    this.getDogsDetail();
+  }
+
+  //date format function
+  changeDogDateFormat = (date) => {
+    const dogDate = new Date("2020-08-13");
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "2-digit",
+    }).format(dogDate);
+  };
+
+  // declare dogs detail function
+  getDogsDetail = () => {
+    let query_string = new URLSearchParams(this.props.location.search);
+    let id = query_string.get("id");
+
+    const url =
+      "http://breed-dev-back.vuwork.com:8082/getDogById/" + id + "?dog=1";
+    httpGet(url)
+      .then((response) => {
+        this.setState({
+          dog_detail: response.data,
+          user_detail: response.data.user,
+          dog_files: response.data.dog_files,
+        });
+      })
+      .catch(function (error) {
+        // handle error
+        console.log(error);
+      });
+  };
+  render() {
+    const { dog_detail, user_detail, dog_files } = this.state;
+    return (
+      <>
+        <Box>
           <Box
             paddingTop="80px"
-            paddingBottom={this.props.width==="xs" ? "45px" : "0px"}
+            paddingBottom={this.props.width === "xs" ? "45px" : "0px"}
             style={{ backgroundColor: "#e0dbd5" }}
           >
             <Container style={{ maxWidth: "1208px" }}>
-              <Box className="dog-name-text" fontSize = {this.props.width==="xs" ? "30px" : "50px"} textAlign = {this.props.width==="xs" ? "center" : "left"}>Pearl</Box>
-              <Box  fontSize = "16px" fontWeight="700" marginBottom="40px" textAlign = {this.props.width==="xs" ? "center" : "left"}>Kuiu's Bearded Honeybadger</Box>
+              <Box
+                className="dog-name-text"
+                fontSize={this.props.width === "xs" ? "30px" : "50px"}
+                textAlign={this.props.width === "xs" ? "center" : "left"}
+              >
+                {dog_detail.title}
+              </Box>
+              <Box
+                fontSize="16px"
+                fontWeight="700"
+                marginBottom="40px"
+                textAlign={this.props.width === "xs" ? "center" : "left"}
+              >
+                Kuiu's Bearded Honeybadger
+              </Box>
               <Grid container>
                 <Grid item xs={12} sm={6} md={5}>
-                  <Box width={this.props.width==="xs" ? "100%" : "336px"} marginBottom={this.props.width==="xs" ? "45px" : "0px"}>
+                  <Box
+                    width={this.props.width === "xs" ? "100%" : "336px"}
+                    marginBottom={this.props.width === "xs" ? "45px" : "0px"}
+                  >
                     <Box className="dog-image-box-child">
                       <img
-                        src="http://breed-dev-back.vuwork.com:8082/images/dogs/mainImage/144/main_image-1594272218923-san-diego-dog-1597294652598.png"
+                        src={dog_detail.main_image}
                         alt="dog-img"
                         height="100%"
                         width="100%"
                       />
                       <Box className="like-dislike-main">
-                        <img src={heartIcon} alt="heart-icon" className="heartIcon"/>
+                        <img
+                          src={heartIcon}
+                          alt="heart-icon"
+                          className="heartIcon"
+                        />
                       </Box>
                     </Box>
                     <Box display="flex" justifyContent="space-between">
-                      <Box marginTop= "-5px">
-                        <Box fontWeight="700" fontSize="20px">Availability</Box>
-                        <Box fontWeight="500" fontSize="14px">Available Now</Box>
+                      <Box marginTop="-5px">
+                        <Box fontWeight="700" fontSize="20px">
+                          Availability
+                        </Box>
+                        <Box fontWeight="500" fontSize="14px">
+                          Available Now
+                        </Box>
                       </Box>
                       <Box>
                         <Button
@@ -59,13 +135,15 @@ class DogInformation extends Component {
                   <Box
                     display="flex"
                     justifyContent="center"
-                    flexDirection= {this.props.width==="xs" ? "row" : "column"}
+                    flexDirection={this.props.width === "xs" ? "row" : "column"}
                   >
                     <Box
                       display="flex"
                       justifyContent="space-between"
-                      paddingRight= {this.props.width==="xs" ? "0px" : "48px"}
-                      flexDirection= {this.props.width==="xs" ? "column" : "row"}
+                      paddingRight={this.props.width === "xs" ? "0px" : "48px"}
+                      flexDirection={
+                        this.props.width === "xs" ? "column" : "row"
+                      }
                     >
                       <Box
                         color="white"
@@ -80,7 +158,9 @@ class DogInformation extends Component {
                         <Box fontSize="21px" fontWeight="600">
                           DOB
                         </Box>
-                        <Box fontSize="15px">April 4, 2018</Box>
+                        <Box fontSize="15px">
+                          {this.changeDogDateFormat(dog_detail.date_of_birth)}
+                        </Box>
                       </Box>
                       <Box
                         color="white"
@@ -91,13 +171,17 @@ class DogInformation extends Component {
                         style={{ backgroundColor: "#3f3047" }}
                         flexDirection="column"
                         justifyContent="center"
-                        marginTop={this.props.width==="xs" ? "40px" : "0px"}
-                        marginBottom={this.props.width==="xs" ? "40px" : "0px"}
+                        marginTop={this.props.width === "xs" ? "40px" : "0px"}
+                        marginBottom={
+                          this.props.width === "xs" ? "40px" : "0px"
+                        }
                       >
                         <Box fontSize="21px" fontWeight="600">
                           Sex
                         </Box>
-                        <Box fontSize="15px">Male</Box>
+                        <Box fontSize="15px">
+                          {dog_detail.gender === 1 ? "Male" : "Female"}
+                        </Box>
                       </Box>
                       <Box
                         color="white"
@@ -120,8 +204,11 @@ class DogInformation extends Component {
               </Grid>
             </Container>
           </Box>
-          
-          <Box marginTop={this.props.width==="xs" ? "0px" : "-288px"} style={{ backgroundColor: "white" }}>
+
+          <Box
+            marginTop={this.props.width === "xs" ? "0px" : "-288px"}
+            style={{ backgroundColor: "white" }}
+          >
             <Container style={{ maxWidth: "1208px" }}>
               <Box paddingTop="80px" paddingBottom="64px">
                 <Grid container>
@@ -134,7 +221,7 @@ class DogInformation extends Component {
                             Owners
                           </Box>
                           <Box fontSize="15px" textTransform="capitalize">
-                            Dr. Dayna Baxter
+                            {user_detail.firstname} {user_detail.lastname}
                           </Box>
                         </Box>
                         <Box marginBottom="32px">
@@ -142,7 +229,13 @@ class DogInformation extends Component {
                             Location
                           </Box>
                           <Box fontSize="15px" textTransform="capitalize">
-                            Houseton, TX 77035
+                            {typeof user_detail.City_Id !== "undefined" &&
+                              user_detail.City_Id.name}
+                            {typeof user_detail.City_Id !== "undefined" &&
+                              typeof user_detail.State_Id !== "undefined" &&
+                              ", "}
+                            {typeof user_detail.State_Id !== "undefined" &&
+                              user_detail.State_Id.name}
                           </Box>
                         </Box>
                         <Box marginBottom="32px">
@@ -150,7 +243,7 @@ class DogInformation extends Component {
                             Website
                           </Box>
                           <Box fontSize="15px" textTransform="capitalize">
-                            wwww.website.com
+                            {user_detail.website}
                           </Box>
                         </Box>
                         <Box>
@@ -158,7 +251,7 @@ class DogInformation extends Component {
                             Contact
                           </Box>
                           <Box fontSize="15px" textTransform="capitalize">
-                            +1 (226) 4730753
+                            {user_detail.phone}
                           </Box>
                         </Box>
                       </Box>
@@ -180,7 +273,7 @@ class DogInformation extends Component {
                             />
                           </Box>
                           <Box fontSize="15px" textTransform="capitalize">
-                            Coefficient of Inbreeding from Breedmate
+                            {dog_detail.coi}
                           </Box>
                         </Box>
                         <Box marginBottom="32px">
@@ -200,14 +293,31 @@ class DogInformation extends Component {
                             />
                           </Box>
                           <Box display="flex" marginRight="16px">
-                            <Box marginRight="8px" marginTop= "3px">
+                            <Box marginRight="8px" marginTop="3px">
                               <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAPCAYAAAA/I0V3AAAACXBIWXMAAAsSAAALEgHS3X78AAAA4klEQVQokY2SzRGCQAyFn2gBdqAdaAdYggUwIyXQgS1w9OghBVACdoB3DtqBVoDzadbBQX5yyiT5Nm/f7qxpGvVFkiRbSYWklY9cJO17IQdKSQ8Hd5I2gIsR4MawmT28Ti2OpgLtiAaAVNK61VtKon+PeoDM87QFlD76MeIPUAR5Plj6Vg4p53VdTwXonciRl7utY0DutRwo9kLm8BCAm1Uwompd9K27DyABeuKIS8Ml8iC3AxD8CBpH7mJmQLiJRA7pAESw/CzpwMN5nQ96ZauZYcxPfD+svxXSCLZyUDckvQDiaXGb9gc+wAAAAABJRU5ErkJggg=="
                                 alt="pdf-icon"
                               />
                             </Box>
                             <Box fontSize="15px" textTransform="capitalize">
-                              Draft Name
+                              {dog_files.map((dog_file, index) => {
+                                return (
+                                  <Box>
+                                    {dog_file.file_type === 1 && (
+                                      <Link
+                                        target="__blank"
+                                        style={{
+                                          textDecoration: "none",
+                                          color: "rgba(0,0,0,.87)",
+                                        }}
+                                        href={dog_file.filename}
+                                      >
+                                        {dog_file.name}
+                                      </Link>
+                                    )}
+                                  </Box>
+                                );
+                              })}
                             </Box>
                           </Box>
                         </Box>
@@ -228,14 +338,31 @@ class DogInformation extends Component {
                             />
                           </Box>
                           <Box display="flex" marginRight="16px">
-                            <Box marginRight="8px" marginTop= "3px">
+                            <Box marginRight="8px" marginTop="3px">
                               <img
                                 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAPCAYAAAA/I0V3AAAACXBIWXMAAAsSAAALEgHS3X78AAAA4klEQVQokY2SzRGCQAyFn2gBdqAdaAdYggUwIyXQgS1w9OghBVACdoB3DtqBVoDzadbBQX5yyiT5Nm/f7qxpGvVFkiRbSYWklY9cJO17IQdKSQ8Hd5I2gIsR4MawmT28Ti2OpgLtiAaAVNK61VtKon+PeoDM87QFlD76MeIPUAR5Plj6Vg4p53VdTwXonciRl7utY0DutRwo9kLm8BCAm1Uwompd9K27DyABeuKIS8Ml8iC3AxD8CBpH7mJmQLiJRA7pAESw/CzpwMN5nQ96ZauZYcxPfD+svxXSCLZyUDckvQDiaXGb9gc+wAAAAABJRU5ErkJggg=="
                                 alt="pdf-icon"
                               />
                             </Box>
                             <Box fontSize="15px" textTransform="capitalize">
-                              Draft Name
+                              {dog_files.map((dog_file, index) => {
+                                return (
+                                  <Box>
+                                    {dog_file.file_type === 2 && (
+                                      <Link
+                                        target="__blank"
+                                        style={{
+                                          textDecoration: "none",
+                                          color: "rgba(0,0,0,.87)",
+                                        }}
+                                        href={dog_file.filename}
+                                      >
+                                        {dog_file.name}
+                                      </Link>
+                                    )}
+                                  </Box>
+                                );
+                              })}
                             </Box>
                           </Box>
                         </Box>
@@ -247,10 +374,9 @@ class DogInformation extends Component {
             </Container>
           </Box>
         </Box>
-        </>
-      );
-    }
+      </>
+    );
   }
-  
-  export default withWidth()(DogInformation);
-  
+}
+
+export default withWidth()(withRouter(DogInformation));

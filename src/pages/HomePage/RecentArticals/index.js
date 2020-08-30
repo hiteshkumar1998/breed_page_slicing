@@ -20,6 +20,7 @@ var settings = {
 };
 
 class RecentArticals extends Component {
+
   slickNext = () => {
     this.slider.slickNext();
   };
@@ -27,6 +28,7 @@ class RecentArticals extends Component {
   slickPrevious = () => {
     this.slider.slickPrev();
   };
+
   render() {
     return (
       <>
